@@ -2,13 +2,11 @@
 
 namespace Drupal\carto_sync;
 
-use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Url;
-use Drupal\views_ui\ViewListBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -61,6 +59,9 @@ class CartoSyncViewListBuilder extends ConfigEntityListBuilder {
       'disabled' => [],
     ];
     foreach (parent::load() as $entity) {
+      if (!$this->isCartoView($entity)) {
+        continue;
+      }
       if ($entity->status()) {
         $entities['enabled'][] = $entity;
       }
@@ -263,6 +264,27 @@ class CartoSyncViewListBuilder extends ConfigEntityListBuilder {
 
     sort($displays);
     return $displays;
+  }
+
+  /**
+   * Checks if a view is Synced with CARTO or not.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $view
+   *   The view entity instance to get a list of displays for.
+   *
+   * @return bool
+   *   Boolean indicating if the current view is a CARTO synced view or not.
+   */
+  protected function isCartoView(EntityInterface $view) {
+    $executable = $view->getExecutable();
+    $executable->initDisplay();
+    foreach ($executable->displayHandlers as $display) {
+      $definition = $display->getPluginDefinition();
+      if ($definition['id'] == 'carto_sync') {
+        return TRUE;
+      }
+    }
+    return FALSE;
   }
 
 }
