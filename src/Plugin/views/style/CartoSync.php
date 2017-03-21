@@ -9,7 +9,7 @@ use Drupal\views\Plugin\views\style\StylePluginBase;
  *
  * @ViewsStyle(
  *   id = "carto_sync",
- *   theme = "views_view_carto_sync",
+ *   theme = "views_view_unformatted",
  *   title = @Translation("CartoSync"),
  *   help = @Translation("CartoSync."),
  *   display_types = {"carto_sync"}
@@ -18,8 +18,17 @@ use Drupal\views\Plugin\views\style\StylePluginBase;
 class CartoSync extends StylePluginBase {
 
   /**
-   * {@inheritdoc}
+   * Does the style plugin allows to use style plugins.
+   *
+   * @var bool
    */
-  protected $usesFields = TRUE;
+  protected $usesRowPlugin = TRUE;
+
+  /**
+   * Does the style plugin support custom css class for the rows.
+   *
+   * @var bool
+   */
+  protected $usesRowClass = FALSE;
 
 }

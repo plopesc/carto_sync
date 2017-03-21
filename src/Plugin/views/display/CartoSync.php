@@ -18,6 +18,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *
  * @ViewsDisplay(
  *   id = "carto_sync",
+ *   theme = "views_view",
  *   title = @Translation("CARTOSync"),
  *   help = @Translation("Publish Drupal data to CARTO."),
  *   uses_route = FALSE,
@@ -83,23 +84,6 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
     parent::execute();
 
     return $this->view->render();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function preview() {
-    $output = $this->view->render();
-
-    if (!empty($this->view->live_preview)) {
-      $output = [
-        '#prefix' => '<pre>',
-        '#plain_text' => drupal_render_root($output),
-        '#suffix' => '</pre>',
-      ];
-    }
-
-    return $output;
   }
 
   /**
