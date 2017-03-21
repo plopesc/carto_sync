@@ -5,7 +5,7 @@ namespace Drupal\carto_sync\Plugin\views\display;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\CacheableResponse;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\views\Plugin\views\display\Feed;
+use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\Plugin\views\display\ResponseDisplayPluginInterface;
 use Drupal\views\ViewExecutable;
 use Drupal\views\Views;
@@ -25,7 +25,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *   returns_response = FALSE
  * )
  */
-class CartoSync extends Feed implements ResponseDisplayPluginInterface{
+class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterface {
 
   /**
    * Whether the display allows the use of AJAX or not.
@@ -142,12 +142,9 @@ class CartoSync extends Feed implements ResponseDisplayPluginInterface{
     $options['displays'] = ['default' => []];
 
     // Overrides for standard stuff.
-    $options['style']['contains']['type']['default'] = 'rss';
+    $options['style']['contains']['type']['default'] = 'carto_sync';
     $options['style']['contains']['options']['default']  = ['description' => ''];
-    $options['sitename_title']['default'] = FALSE;
-    $options['row']['contains']['type']['default'] = 'rss_fields';
     $options['defaults']['default']['style'] = FALSE;
-    $options['defaults']['default']['row'] = FALSE;
 
     return $options;
   }
@@ -180,37 +177,11 @@ class CartoSync extends Feed implements ResponseDisplayPluginInterface{
     // Since we're childing off the 'path' type, we'll still *call* our
     // category 'page' but let's override it so it says feed settings.
     $categories['page'] = [
-      'title' => $this->t('Feed settings'),
+      'title' => $this->t('Access settings'),
       'column' => 'second',
       'build' => [
         '#weight' => -10,
       ],
-    ];
-
-    if ($this->getOption('sitename_title')) {
-      $options['title']['value'] = $this->t('Using the site name');
-    }
-
-    $displays = array_filter($this->getOption('displays'));
-    if (count($displays) > 1) {
-      $attach_to = $this->t('Multiple displays');
-    }
-    elseif (count($displays) == 1) {
-      $display = array_shift($displays);
-      $displays = $this->view->storage->get('display');
-      if (!empty($displays[$display])) {
-        $attach_to = $displays[$display]['display_title'];
-      }
-    }
-
-    if (!isset($attach_to)) {
-      $attach_to = $this->t('None');
-    }
-
-    $options['displays'] = [
-      'category' => 'page',
-      'title' => $this->t('Attach to'),
-      'value' => $attach_to,
     ];
   }
 

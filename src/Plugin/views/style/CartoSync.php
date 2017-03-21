@@ -17,4 +17,9 @@ use Drupal\views\Plugin\views\style\StylePluginBase;
  */
 class CartoSync extends StylePluginBase {
 
+  /**
+   * {@inheritdoc}
+   */
+  protected $usesFields = TRUE;
+
 }
