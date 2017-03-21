@@ -1,8 +1,7 @@
-
-carto_sync.carto_sync_view_list_builder_listing:
+carto_sync.carto_sync_collection:
   path: 'admin/structure/carto_sync'
   defaults:
     _controller: '\Drupal\carto_sync\Controller\CartoSyncViewListController::listing'
-    _title: 'PPPP'
+    _title: 'Carto Sync Views'
   requirements:
-    _permission: 'access content'
+    _permission: 'administer carto_sync'
