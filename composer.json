@@ -1,0 +1,14 @@
+{
+  "name": "drupal/carto_sync",
+  "type": "drupal-module",
+  "description": "Publish Drupal data in CARTO",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/carto_sync",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/carto_sync",
+    "source": "http://cgit.drupalcode.org/carto_sync"
+  },
+  "require": { }
+}
