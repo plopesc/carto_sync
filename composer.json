@@ -10,5 +10,8 @@
     "issues": "https://www.drupal.org/project/issues/carto_sync",
     "source": "http://cgit.drupalcode.org/carto_sync"
   },
-  "require": { }
+  "require": {
+    "drupal/geofield": "~1.0"
+  }
+
 }
