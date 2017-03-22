@@ -142,6 +142,18 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
     $options['style']['contains']['type']['default'] = 'carto_sync';
     $options['style']['contains']['options']['default']  = ['description' => ''];
     $options['defaults']['default']['style'] = FALSE;
+    $options['defaults']['default']['access'] = FALSE;
+
+    $options['access']['contains'] = [
+      'type' => [
+        'default' => 'perm'
+      ],
+      'options' => [
+        'default' => [
+          'perm' => 'administer carto_sync'
+        ]
+      ]
+    ];
 
     return $options;
   }
@@ -171,15 +183,8 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
   public function optionsSummary(&$categories, &$options) {
     parent::optionsSummary($categories, $options);
 
-    // Since we're childing off the 'path' type, we'll still *call* our
-    // category 'page' but let's override it so it says feed settings.
-    $categories['page'] = [
-      'title' => $this->t('Access settings'),
-      'column' => 'second',
-      'build' => [
-        '#weight' => -10,
-      ],
-    ];
+    // Hide access options, once are hardcoded.
+    unset($options['access']);
   }
 
   /**
