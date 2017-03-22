@@ -289,7 +289,7 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
       if (isset($field->definition['field_name'])) {
         $entity_type_id = $field->definition['entity_type'];
         $def = \Drupal::entityManager()->getFieldStorageDefinitions($entity_type_id);
-        if ($def[$field->definition['field_name']]->type == 'geofield') {
+        if ($def[$field->definition['field_name']]->getType() == 'geofield') {
           $available = TRUE;
           break;
         }
