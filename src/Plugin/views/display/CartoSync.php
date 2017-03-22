@@ -52,6 +52,19 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
   /**
    * {@inheritdoc}
    */
+  public function validate() {
+    $errors = parent::validate();
+
+    if (!$this->hasGeoField()) {
+      $errors[] = $this->t('Display "@display" requires at least one field of type "Geofield".', ['@display' => $this->display['display_title']]);
+    }
+
+    return $errors;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function buildResponse($view_id, $display_id, array $args = []) {
     $build = static::buildBasicRenderable($view_id, $display_id, $args);
 
@@ -262,6 +275,27 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
    */
   public function usesLinkDisplay() {
     return TRUE;
+  }
+
+  /**
+   * Checks whether the current display has any Geo field or not.
+   *
+   * @return bool
+   */
+  protected function hasGeoField() {
+    $available = FALSE;
+    $fields = $this->getHandlers('field');
+    foreach ($fields as $field) {
+      if (isset($field->definition['field_name'])) {
+        $entity_type_id = $field->definition['entity_type'];
+        $def = \Drupal::entityManager()->getFieldStorageDefinitions($entity_type_id);
+        if ($def[$field->definition['field_name']]->type == 'geofield') {
+          $available = TRUE;
+          break;
+        }
+      }
+    }
+    return $available;
   }
 
 }
