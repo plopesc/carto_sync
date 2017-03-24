@@ -1,0 +1,9 @@
+cart_sync.collection:
+  route_name: carto_sync.carto_sync_collection
+  title: 'List'
+  base_route: carto_sync.carto_sync_collection
+
+cart_sync.admin_settings:
+  route_name: carto_sync.admin_settings
+  title: 'Settings'
+  base_route: carto_sync.carto_sync_collection
