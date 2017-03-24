@@ -1,0 +1,5 @@
+carto_sync.collection:
+  title: 'CARTO Sync'
+  description: 'Synchronize Drupal data with CARTO.'
+  route_name: carto_sync.carto_sync_collection
+  parent: system.admin_structure
