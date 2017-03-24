@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ * Contains carto_sync.module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function carto_sync_theme() {
+  return [
+    // On behalf of a plugin
+    'carto_sync_style_plugin_table' => [
+      'render element' => 'form',
+      'file' => 'carto_sync.theme.inc',
+    ],
+  ];
+}
