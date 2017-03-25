@@ -3,3 +3,4 @@ carto_sync_add_local_action:
   title: 'Add view'
   appears_on:
     - carto_sync.carto_sync_collection
+    - carto_sync.carto_sync_dashboard
