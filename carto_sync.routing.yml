@@ -13,3 +13,11 @@ carto_sync.admin_settings:
     _title: 'Carto Sync Settings'
   requirements:
     _permission: 'administer carto_sync'
+
+carto_sync.carto_sync_item_list_controller_listing:
+  path: '/admin/structure/carto_sync/synchronize'
+  defaults:
+    _controller: '\Drupal\carto_sync\Controller\CartoSyncItemListController::listing'
+    _title: 'Synchronize CARTO'
+  requirements:
+    _permission: 'administer carto_sync'

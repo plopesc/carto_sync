@@ -1,4 +1,4 @@
-Carto_sync.config:
+carto_sync.config:
   type: config_object
   label: 'CARTO Sync settings'
   mapping:

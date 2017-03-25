@@ -10,6 +10,14 @@
  */
 function carto_sync_theme() {
   return [
+    'carto_sync_listing_table' => [
+      'variables' => [
+        'headers' => NULL,
+        'rows' => NULL,
+        'attributes' => [],
+      ],
+      'file' => 'carto_sync.theme.inc',
+    ],
     // On behalf of a plugin
     'carto_sync_style_plugin_table' => [
       'render element' => 'form',
