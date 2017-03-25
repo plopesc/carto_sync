@@ -125,7 +125,7 @@ class CartoSyncItemListController extends ControllerBase {
         ],
         'dataset_name' => [
           'data' => [
-            '#plain_text' => $view->id(),
+            '#plain_text' => isset($display['display_options']['dataset_name']) ? $display['display_options']['dataset_name'] : $this->t('Not defined'),
           ],
         ],
         'status' => [
