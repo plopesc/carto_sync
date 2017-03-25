@@ -185,6 +185,26 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
 
     // Hide access options, once are hardcoded.
     unset($options['access']);
+
+    $dataset = strip_tags($this->getOption('dataset_name'));
+    if (!$dataset) {
+      $dataset = $this->t('None');
+    }
+
+    $options['dataset_name'] = [
+      'category' => 'access',
+      'title' => $this->t('Dataset Name'),
+      'value' => views_ui_truncate($dataset, 32),
+      'desc' => $this->t('Change the dataset name to create in CARTO.'),
+    ];
+
+    $categories['access'] = [
+      'title' => $this->t('CARTO settings'),
+      'column' => 'second',
+      'build' => [
+        '#weight' => -10,
+      ],
+    ];
   }
 
   /**
@@ -195,41 +215,42 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
     parent::buildOptionsForm($form, $form_state);
 
     switch ($form_state->get('section')) {
-      case 'title':
-        $title = $form['title'];
-        // A little juggling to move the 'title' field beyond our checkbox.
-        unset($form['title']);
-        $form['sitename_title'] = [
-          '#type' => 'checkbox',
-          '#title' => $this->t('Use the site name for the title'),
-          '#default_value' => $this->getOption('sitename_title'),
-        ];
-        $form['title'] = $title;
-        $form['title']['#states'] = [
-          'visible' => [
-            ':input[name="sitename_title"]' => ['checked' => FALSE],
-          ],
+      case 'dataset_name':
+        $form['#title'] .= $this->t('The CARTO dataset name');
+        $form['dataset_name'] = [
+          '#title' => $this->t('Dataset name'),
+          '#type' => 'machine_name',
+          '#description' => $this->t('This will be tthe name of the daaset generated when synchronizing your data with CARTO.'),
+          '#default_value' => $this->getOption('dataset_name'),
+          '#required' => TRUE,
+          '#maxlength' => 255,
         ];
         break;
-      case 'displays':
-        $form['#title'] .= $this->t('Attach to');
-        $displays = [];
-        foreach ($this->view->storage->get('display') as $display_id => $display) {
-          // @todo The display plugin should have display_title and id as well.
-          if ($this->view->displayHandlers->has($display_id) && $this->view->displayHandlers->get($display_id)->acceptAttachments()) {
-            $displays[$display_id] = $display['display_title'];
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateOptionsForm(&$form, FormStateInterface $form_state) {
+    parent::validateOptionsForm($form, $form_state);
+
+    $section = $form_state->get('section');
+    switch ($section) {
+      case 'dataset_name':
+        if ($form_state->getValue('dataset_name')) {
+          if (preg_match('/[^a-z0-9_]/', $form_state->getValue('dataset_name'))) {
+            $form_state->setError($form['dataset_name'], $this->t('Dataset name must be letters, numbers, or underscores only.'));
           }
+
+          foreach ($this->view->displayHandlers as $id => $display) {
+            if ($id != $this->view->current_display && ($form_state->getValue('dataset_name') == $id || (isset($display->new_id) && $form_state->getValue('dataset_name') == $display->new_id))) {
+              $form_state->setError($form['dataset_name'], $this->t('Dataset name should be unique.'));
+            }
+          }
+          // @TODO: Validate uniqueness across the whole system.
         }
-        $form['displays'] = [
-          '#title' => $this->t('Displays'),
-          '#type' => 'checkboxes',
-          '#description' => $this->t('The feed icon will be available only to the selected displays.'),
-          '#options' => array_map('\Drupal\Component\Utility\Html::escape', $displays),
-          '#default_value' => $this->getOption('displays'),
-        ];
         break;
-      case 'path':
-        $form['path']['#description'] = $this->t('This view will be displayed by visiting this path on your site. It is recommended that the path be something like "path/%/%/feed" or "path/%/%/rss.xml", putting one % in the path for each contextual filter you have defined in the view.');
     }
   }
 
@@ -240,11 +261,8 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
     parent::submitOptionsForm($form, $form_state);
     $section = $form_state->get('section');
     switch ($section) {
-      case 'title':
-        $this->setOption('sitename_title', $form_state->getValue('sitename_title'));
-        break;
-      case 'displays':
-        $this->setOption($section, $form_state->getValue($section));
+      case 'dataset_name':
+        $this->setOption('dataset_name', $form_state->getValue('dataset_name'));
         break;
     }
   }
