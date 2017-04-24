@@ -1,0 +1,5 @@
+services:
+  carto_sync.sql_api:
+    class: Drupal\carto_sync\CartoSyncApi
+    arguments: ['@http_client', '@config.factory']
+
