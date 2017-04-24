@@ -29,18 +29,29 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterface {
 
   /**
-   * Whether the display allows the use of AJAX or not.
-   *
-   * @var bool
+   * Overrides \Drupal\views\Plugin\views\display\DisplayPluginBase::$usesAJAX.
    */
-  protected $ajaxEnabled = FALSE;
+  protected $usesAJAX = FALSE;
 
   /**
-   * Whether the display allows the use of a pager or not.
-   *
-   * @var bool
+   * Overrides \Drupal\views\Plugin\views\display\DisplayPluginBase::$usesPager.
    */
   protected $usesPager = FALSE;
+
+  /**
+   * Overrides \Drupal\views\Plugin\views\display\DisplayPluginBase::$usesMore.
+   */
+  protected $usesMore = FALSE;
+
+  /**
+   * Overrides \Drupal\views\Plugin\views\display\DisplayPluginBase::$usesAreas.
+   */
+  protected $usesAreas = FALSE;
+
+  /**
+   * Overrides \Drupal\views\Plugin\views\display\DisplayPluginBase::$usesOptions.
+   */
+  protected $usesOptions = FALSE;
 
   /**
    * {@inheritdoc}
@@ -297,7 +308,7 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
    * {@inheritdoc}
    */
   public function usesLinkDisplay() {
-    return TRUE;
+    return FALSE;
   }
 
   /**
