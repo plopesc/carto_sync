@@ -33,7 +33,7 @@ class CartoSyncViewListBuilder extends ConfigEntityListBuilder {
   }
 
   /**
-   * Constructs a new VCartoSynciewListBuilder object.
+   * Constructs a new CartoSynciewListBuilder object.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
    *   The entity type definition.

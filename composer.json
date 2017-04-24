@@ -11,7 +11,8 @@
     "source": "http://cgit.drupalcode.org/carto_sync"
   },
   "require": {
-    "drupal/geofield": "~1.0"
+    "drupal/geofield": "~1.0",
+    "league/csv": "^7.1"
   }
 
 }

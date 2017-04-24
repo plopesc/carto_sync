@@ -2,9 +2,13 @@
 
 namespace Drupal\carto_sync\Plugin\views\style;
 
+use Consolidation\OutputFormatters\Formatters\CsvFormatter;
+use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Plugin\views\style\StylePluginBase;
+use Drupal\views\ResultRow;
+use League\Csv\Writer;
 
 /**
  * Defines a style plugin for CARTO Sync.
@@ -20,26 +24,45 @@ use Drupal\views\Plugin\views\style\StylePluginBase;
 class CartoSync extends StylePluginBase {
 
   /**
-   * Does the style plugin allows to use style plugins.
-   *
-   * @var bool
+   * Overrides \Drupal\views\Plugin\views\style\StylePluginBase::$usesRowPlugin.
    */
-  protected $usesRowPlugin = TRUE;
+  protected $usesRowPlugin = FALSE;
 
   /**
-   * Does the style plugin support custom css class for the rows.
-   *
-   * @var bool
+   * Overrides \Drupal\views\Plugin\views\style\StylePluginBase::$usesFields.
+   */
+  protected $usesFields = TRUE;
+
+  /**
+   * Overrides \Drupal\views\Plugin\views\style\StylePluginBase::$usesRowClass.
    */
   protected $usesRowClass = FALSE;
 
   /**
-   * Does the style plugin support grouping of rows.
-   *
-   * @var bool
+   * Overrides Drupal\views\Plugin\views\style\StylePluginBase::$usesGrouping.
    */
   protected $usesGrouping = FALSE;
 
+  /**
+   * Indicates the character used to delimit fields. Defaults to ",".
+   *
+   * @var string
+   */
+  protected $delimiter = ',';
+
+  /**
+   * Indicates the character used for field enclosure. Defaults to '"'.
+   *
+   * @var string
+   */
+  protected $enclosure = '"';
+
+  /**
+   * Indicates the character used for escaping. Defaults to "\".
+   *
+   * @var string
+   */
+  protected $escapeChar = '\\';
 
   /**
    * Render the given style.
@@ -55,8 +78,8 @@ class CartoSync extends StylePluginBase {
     $field_names = $this->displayHandler->getFieldLabels();
 
     $columns = $this->sanitizeColumns($this->options['columns']);
-    $geo_columns = $this->geoColumnsofType('geofield');
-    $int_columns = $this->geoColumnsofType('integer');
+    $geo_columns = $this->getColumnsOfType('geofield');
+    $int_columns = $this->getColumnsOfType('integer');
 
     foreach ($columns as $field => $column) {
 
@@ -199,19 +222,196 @@ class CartoSync extends StylePluginBase {
    * @return string[]
    *   Field names of the requested field type.
    */
-  protected function geoColumnsofType($field_type) {
-    $geo_columns = [];
+  protected function getColumnsOfType($field_type) {
+    $columns = [];
     foreach ($this->displayHandler->getHandlers('field') as $id => $handler) {
       if (isset($handler->definition['field_name'])) {
         $entity_type_id = $handler->definition['entity_type'];
         $def = \Drupal::entityManager()->getFieldStorageDefinitions($entity_type_id);
         if ($def[$handler->definition['field_name']]->getType() == $field_type) {
-          $geo_columns[] = $id;
+          $columns[] = $id;
         }
       }
     }
 
-    return  $geo_columns;
+    return  $columns;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function render() {
+    $dataset = [];
+
+    // Get the excluded fields array, common for all rows.
+    $excluded_fields = $this->getExcludedFields();
+
+    // Render each row.
+    foreach ($this->view->result as $i => $row) {
+      if ($feature = $this->renderRow($row, $excluded_fields)) {
+        $dataset[] = $feature;
+      }
+    }
+
+    // Instantiate CSV writer with options.
+    $csv = Writer::createFromFileObject(new \SplTempFileObject());
+    $csv->setDelimiter($this->delimiter);
+    $csv->setEnclosure($this->enclosure);
+    $csv->setEscape($this->escapeChar);
+
+    // Set data.
+    $headers = $this->extractHeaders($dataset);
+    $csv->insertOne($headers);
+//    $csv->addFormatter(array($this, 'formatRow'));
+    foreach ($dataset as $row) {
+      $csv->insertOne($row);
+    }
+    $output = $csv->__toString();
+    if (!empty($this->view->live_preview)) {
+      // Pretty-print the JSON.
+      $json = json_encode($features, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_PRETTY_PRINT);
+    }
+    else {
+      // Render the collection to JSON using Drupal standard renderer.
+      $json = Json::encode($features);
+    }
+
+    if (!empty($this->options['jsonp_prefix'])) {
+      $json = $this->options['jsonp_prefix'] . "($json)";
+    }
+
+
+    // Everything else returns output.
+    return $json;
+  }
+
+  /**
+   * Render views fields to GeoJSON.
+   *
+   * Takes each field from a row object and renders the field as determined by
+   * the field's theme.
+   *
+   * @param \Drupal\views\ResultRow $row
+   *   Row object.
+   * @param array $excluded_fields
+   *   Array containing field keys to be excluded.
+   *
+   * @return array
+   *   Array containing all the raw and rendered fields
+   */
+  protected function renderRow(ResultRow $row, $excluded_fields) {
+$geophp = \Drupal::service('geofield.geophp');
+    $data['cartodb_id'] = $this->view->field[$this->options['primary_key']]->advancedRender($row);
+    $geofield = $this->view->style_plugin->getFieldValue($row->index, $this->options['the_geom']);
+    if (!empty($geofield)) {
+      $geometry = $geophp->load($geofield);
+      $data['the_geom'] = $geometry->out('wkb');
+    }
+    else {
+      return;
+    }
+
+    // Fill in attributes that are not:
+    // - Coordinate fields,
+    // - Name/description (already processed),
+    // - Views "excluded" fields.
+    foreach (array_keys($this->view->field) as $id) {
+      $field = $this->view->field[$id];
+      if (!isset($excluded_fields[$id]) && !($field->options['exclude'])) {
+        // Allows you to customize the name of the property by setting a label
+        // to the field.
+        $key = $this->options['info'][$id]['field_name'];
+        $value_rendered = $field->advancedRender($row);
+        $data[$key] = is_numeric($value_rendered) ? floatval($value_rendered) : $value_rendered;
+      }
+    }
+
+    return $data;
+  }
+
+  /**
+   * Retrieves the name field value.
+   *
+   * @param ResultRow $row
+   *   The result row.
+   *
+   * @return string
+   *   The main field value.
+   */
+  protected function renderNameField(ResultRow $row) {
+    return $this->renderMainField($row, 'name_field');
+  }
+
+  /**
+   * Retrieves the description field value.
+   *
+   * @param ResultRow $row
+   *   The result row.
+   *
+   * @return string
+   *   The main field value.
+   */
+  protected function renderDescriptionField(ResultRow $row) {
+    return $this->renderMainField($row, 'description_field');
+  }
+
+  /**
+   * Retrieves the main fields values.
+   *
+   * @param ResultRow $row
+   *   The result row.
+   * @param string $field_name
+   *   The main field name.
+   *
+   * @return string
+   *   The main field value.
+   */
+  protected function renderMainField(ResultRow $row, $field_name) {
+    if ($this->options['data_source'][$field_name]) {
+      return $this->view->field[$this->options['data_source'][$field_name]]->advancedRender($row);
+    }
+    else {
+      return '';
+    }
+  }
+
+  /**
+   * Retrieves the list of excluded fields due to style plugin configuration.
+   *
+   * @return array
+   *   List of excluded fields.
+   */
+  protected function getExcludedFields() {
+    $excluded_fields = [
+      $this->options['primary_key'],
+      $this->options['the_geom'],
+    ];
+
+    return array_combine($excluded_fields, $excluded_fields);
+  }
+
+  /**
+   * Extracts the headers using the first row of values.
+   *
+   * @param array $data
+   *   The array of data to be converted to a CSV.
+   *
+   * We must make the assumption that each row shares the same set of headers
+   * will all other rows. This is inherent in the structure of a CSV.
+   *
+   * @return array
+   *   An array of CSV headesr.
+   */
+  protected function extractHeaders($data) {
+    if (!empty($data)) {
+      $first_row = $data[0];
+      $headers = array_keys($first_row);
+
+      return $headers;
+    }
+    else {
+      return array();
+    }
   }
 
 }

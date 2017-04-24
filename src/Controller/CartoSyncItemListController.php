@@ -4,6 +4,7 @@ namespace Drupal\carto_sync\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Link;
 use Drupal\views\ViewEntityInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityTypeManager;
@@ -56,7 +57,14 @@ class CartoSyncItemListController extends ControllerBase {
     foreach ($views as $view_id => $data) {
       /** @var $view ViewEntityInterface*/
       $view = $data['view'];
-      $list[$view_id]['heading']['#markup'] = '<h2>' . $view->label() . '</h2>';
+
+      if ($view->access('update')) {
+        $list[$view_id]['heading']['#markup'] = '<h2>' . Link::fromTextAndUrl($view->label(), $view->toUrl('edit-form'))->toString() . '</h2>';
+      }
+      else {
+        $list[$view_id]['heading']['#markup'] = '<h2>' . $view->label() . '</h2>';
+      }
+
       if (!empty($view->get('description'))) {
         $list[$view_id]['heading']['#markup'] .= '<span>' . $view->get('description') . '</span>';
       }
@@ -116,6 +124,33 @@ class CartoSyncItemListController extends ControllerBase {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $view, array $display) {
+    /*$client = \Drupal::httpClient();
+    $settings = \Drupal::config('carto_sync.settings');
+    $carto_id = $settings->get('carto_id');
+    $carto_api_key = $settings->get('carto_api_key');
+
+    $service = \Drupal::service('carto_sync.sql_api');
+    $a = $service->getDatasetRows('untitled_table_5');
+
+
+    $uri = 'https://'. $carto_id .'.carto.com/api/v2/sql?q=SELECT count(*) FROM '. 'untitled_table_5';
+  // $data = $client->get($uri);
+   //$d = json_decode($data->getBody());
+    //$a =3;*/
+
+    $service = \Drupal::service('carto_sync.sql_api');
+    if (isset($display['display_options']['dataset_name'])) {
+      if ($service->datasetExists($display['display_options']['dataset_name'])) {
+        $url = $service->getDatasetUrl($display['display_options']['dataset_name']);
+        $link = Link::fromTextAndUrl($this->t('View in CARTO'), $url);
+      }
+      else {
+        $link = [
+          '#plain_text' => 'cacas',
+        ];
+      }
+    }
+
     return [
       'data' => [
         'display_name' => [
@@ -133,7 +168,9 @@ class CartoSyncItemListController extends ControllerBase {
             '#plain_text' => $view->get('description'),
           ],
         ],
-        'operations' => 'cacas',
+        'operations' => [
+          'data' => $link
+        ],
       ],
     ];
   }
