@@ -38,7 +38,7 @@ class SettingsForm extends ConfigFormBase {
     $form['carto_id'] = [
       '#type' => 'textfield',
       '#title' => $this->t('CARTO ID'),
-      '#description' => $this->t('Enter your CARTO user id.'),
+      '#description' => $this->t('Enter your CARTO user ID.'),
       '#default_value' => $config->get('carto_id'),
       '#required' => TRUE,
       '#maxlength' => 64,
@@ -47,7 +47,7 @@ class SettingsForm extends ConfigFormBase {
     $form['carto_api_key'] = [
       '#type' => 'password',
       '#title' => $this->t('CARTO API Key'),
-      '#description' => $this->t('Enter your CARTO API Key'),
+      '#description' => $this->t('Enter your CARTO API Key. Keep it secret.'),
       '#default_value' => $config->get('carto_api_key'),
       '#required' => TRUE,
       '#maxlength' => 64,
