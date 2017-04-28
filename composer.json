@@ -1,15 +1,22 @@
 {
   "name": "drupal/carto_sync",
-  "type": "drupal-module",
   "description": "Publish Drupal data in CARTO",
-  "keywords": ["Drupal"],
-  "license": "GPL-2.0+",
-  "homepage": "https://www.drupal.org/project/carto_sync",
-  "minimum-stability": "dev",
+  "type": "drupal-module",
+  "homepage": "https://www.drupal.org/sandbox/plopesc/carto_sync",
+  "keywords": ["Drupal", "CARTO"],
+  "authors": [
+    {
+      "name": "Pablo López",
+      "homepage": "https://www.drupal.org/u/plopesc",
+      "role": "Maintainer"
+    }
+  ],
   "support": {
     "issues": "https://www.drupal.org/project/issues/carto_sync",
     "source": "http://cgit.drupalcode.org/carto_sync"
   },
+  "license": "GPL-2.0+",
+  "minimum-stability": "dev",
   "require": {
     "drupal/geofield": "~1.0",
     "league/csv": "~8.0"
