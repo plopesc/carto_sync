@@ -10,13 +10,21 @@ namespace Drupal\carto_sync;
 interface CartoSyncApiInterface {
 
   /**
+   * Checks whether the service is available or not.
+   *
+   * @return bool
+   *   TRUE if the service is available, otherwise FALSE.
+   */
+  public function available();
+
+  /**
    * Checks whether a dataset name exists in CARTO or not.
    *
    * @param string $dataset
-   *  The dataset name.
+   *   The dataset name.
    *
    * @return bool TRUE if the dataset name exists, otherwise FALSE.
-   *  TRUE if the dataset name exists, otherwise FALSE.
+   *   TRUE if the dataset name exists, otherwise FALSE.
    *
    * @throws CartoSyncException
    */
@@ -26,20 +34,28 @@ interface CartoSyncApiInterface {
    * Retrieves the number of rows in a given CARTO dataset name.
    *
    * @param string $dataset
-   *  The dataset name.
+   *   The dataset name.
    *
    * @return int
-   *  Integer indicating the number of rows in the given dataset.
+   *   Integer indicating the number of rows in the given dataset.
    */
   public function getDatasetRows($dataset);
 
   /**
    * Generates the CARTO admin dataset URL.
    * @param string $dataset
-   *  The dataset name.
-   * @return Url
-   *  URL object to the given dataset.
+   *   The dataset name.
+   * @return \Drupal\Core\Url
+   *   URL object to the given dataset.
    */
   public function getDatasetUrl($dataset);
+
+  /**
+   * Import the Drupal data in a CARTO dataset.
+   *
+   * @param $path
+   *   The file to import path
+   */
+  public function import($path);
 
 }

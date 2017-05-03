@@ -262,27 +262,16 @@ class CartoSync extends StylePluginBase {
     // Set data.
     $headers = $this->extractHeaders($dataset);
     $csv->insertOne($headers);
-//    $csv->addFormatter(array($this, 'formatRow'));
+
     foreach ($dataset as $row) {
       $csv->insertOne($row);
     }
     $output = $csv->__toString();
-    if (!empty($this->view->live_preview)) {
-      // Pretty-print the JSON.
-      $json = json_encode($features, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_PRETTY_PRINT);
-    }
-    else {
-      // Render the collection to JSON using Drupal standard renderer.
-      $json = Json::encode($features);
-    }
+    $path = file_unmanaged_save_data($output,'temporary://carto_sync_' . $this->view->id() . '.csv', FILE_EXISTS_REPLACE);
 
-    if (!empty($this->options['jsonp_prefix'])) {
-      $json = $this->options['jsonp_prefix'] . "($json)";
-    }
-
-
-    // Everything else returns output.
-    return $json;
+    $real_path = \Drupal::service('file_system')->realpath($path);
+    $service = \Drupal::service('carto_sync.api');
+    $service->import($real_path);
   }
 
   /**
@@ -300,12 +289,12 @@ class CartoSync extends StylePluginBase {
    *   Array containing all the raw and rendered fields
    */
   protected function renderRow(ResultRow $row, $excluded_fields) {
-$geophp = \Drupal::service('geofield.geophp');
+    $geophp = \Drupal::service('geofield.geophp');
     $data['cartodb_id'] = $this->view->field[$this->options['primary_key']]->advancedRender($row);
     $geofield = $this->view->style_plugin->getFieldValue($row->index, $this->options['the_geom']);
     if (!empty($geofield)) {
       $geometry = $geophp->load($geofield);
-      $data['the_geom'] = $geometry->out('wkb');
+      $data['the_geom'] = $geometry->out('json');
     }
     else {
       return;

@@ -2,6 +2,7 @@
 
 namespace Drupal\carto_sync\Controller;
 
+use Drupal\carto_sync\CartoSyncApiInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Link;
@@ -24,10 +25,26 @@ class CartoSyncItemListController extends ControllerBase {
   protected $entityTypeManager;
 
   /**
+   * The CARTO Sync API service.
+   *
+   * @var \Drupal\carto_sync\CartoSyncApiInterface.
+   */
+  protected $cartoSyncApi;
+
+  /**
+   * CARTO Sync API availability flag.
+   *
+   * @var bool
+   */
+  protected $cartoSyncAvailable;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(EntityTypeManager $entity_type_manager) {
+  public function __construct(EntityTypeManager $entity_type_manager, CartoSyncApiInterface $carto_sync_api) {
     $this->entityTypeManager = $entity_type_manager;
+    $this->cartoSyncApi = $carto_sync_api;
+    $this->cartoSyncAvailable = $this->cartoSyncApi->available();
   }
 
   /**
@@ -35,7 +52,8 @@ class CartoSyncItemListController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('carto_sync.api')
     );
   }
 
@@ -129,7 +147,7 @@ class CartoSyncItemListController extends ControllerBase {
     $carto_id = $settings->get('carto_id');
     $carto_api_key = $settings->get('carto_api_key');
 
-    $service = \Drupal::service('carto_sync.sql_api');
+    $service = \Drupal::service('carto_sync.api');
     $a = $service->getDatasetRows('untitled_table_5');
 
 
@@ -138,18 +156,26 @@ class CartoSyncItemListController extends ControllerBase {
    //$d = json_decode($data->getBody());
     //$a =3;*/
 
-    $service = \Drupal::service('carto_sync.sql_api');
-    if (isset($display['display_options']['dataset_name'])) {
-      if ($service->datasetExists($display['display_options']['dataset_name'])) {
-        $url = $service->getDatasetUrl($display['display_options']['dataset_name']);
+    /**
+     * @var $service CartoSyncApiInterface
+     */
+
+    if ($this->cartoSyncAvailable && isset($display['display_options']['dataset_name'])) {
+      if ($this->cartoSyncApi->datasetExists($display['display_options']['dataset_name'])) {
+        $url = $this->cartoSyncApi->getDatasetUrl($display['display_options']['dataset_name']);
         $link = Link::fromTextAndUrl($this->t('View in CARTO'), $url);
       }
       else {
-        $link = [
-          '#plain_text' => 'cacas',
-        ];
+        $link = Link::createFromRoute($this->t('Sync data'), 'carto_sync.import_form', ['view' => $view->id(), 'display_id' => $display['id']]);
       }
     }
+    else {
+      $link = [
+        '#markup' => $this->t('Not available to connect to CARTO')
+      ];
+    }
+
+    //$status
 
     return [
       'data' => [

@@ -45,6 +45,13 @@ class CartoSyncApi implements CartoSyncApiInterface {
   protected $cartoApiKey;
 
   /**
+   * Boolean indicating whether the service is available or not.
+   *
+   * @var bool
+   */
+  protected $validCredentials;
+
+  /**
    * Constructor.
    */
   public function __construct(Client $http_client, ConfigFactory $config_factory) {
@@ -53,6 +60,15 @@ class CartoSyncApi implements CartoSyncApiInterface {
 
     $this->cartoId = $this->configFactory->get('carto_sync.settings')->get('carto_id');
     $this->cartoApiKey = $this->configFactory->get('carto_sync.settings')->get('carto_api_key');
+
+    $this->validCredentials = $this->validCredentials();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function available() {
+    return $this->validCredentials;
   }
 
   /**
@@ -89,11 +105,27 @@ class CartoSyncApi implements CartoSyncApiInterface {
   }
 
   /**
+   * Tries a fake request to CARTO to validate user credentials.
+   *
+   * @return bool
+   */
+  protected function validCredentials() {
+    try {
+      $this->datasetExists(substr(md5(rand()), 0, 12));
+      return TRUE;
+    }
+    catch (CartoSyncException $e) {
+      return FALSE;
+    }
+  }
+
+  /**
+   * Builds a CARTO SQL API URL given a SQL query.
    *
    * @param $query
    * @return string
    */
-  protected function buildUrl($query) {
+  protected function buildSqlUrl($query) {
     $options = [
       'query' => [
         'api_key' => $this->cartoApiKey,
@@ -105,20 +137,57 @@ class CartoSyncApi implements CartoSyncApiInterface {
   }
 
   /**
+   * Builds a CARTO SQL API URL given a SQL query.
+   *
+   * @return string
+   */
+  protected function buildImportUrl() {
+    $options = [
+      'query' => [
+        'api_key' => $this->cartoApiKey,
+      ],
+    ];
+    return Url::fromUri('https://' . $this->cartoId . '.carto.com/api/v1/imports', $options)
+      ->toString();
+  }
+
+  /**
+   * Performs a GET query against the CARTO SQL API.
+   *
    * @param $query
-   * @return stdClass
+   * @return \stdClass
+   *
+   * @throws CartoSyncException
    */
   protected function executeGetQuery($query) {
-    $url = $this->buildUrl($query);
+    $url = $this->buildSqlUrl($query);
     try {
       $data = $this->httpClient->get($url);
       $output = json_decode($data->getBody());
+    }
+    catch (ConnectException $e) {
+      throw new CartoSyncException('Unable to connect to the service');
     }
     catch (RequestException $e) {
       $error = json_decode($e->getResponse()->getBody()->getContents());
       throw new CartoSyncException($error->error[0]);
     }
     return $output;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function import($path) {
+    $data = $this->httpClient->request('POST', $this->buildImportUrl(), [
+      'multipart' => [
+        [
+          'name' => 'file',
+          'contents' => file_get_contents($path),
+          'filename' => basename($path)
+        ]
+      ],
+    ]);
   }
 
 }
