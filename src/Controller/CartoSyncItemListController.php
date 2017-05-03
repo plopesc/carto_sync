@@ -142,28 +142,14 @@ class CartoSyncItemListController extends ControllerBase {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $view, array $display) {
-    /*$client = \Drupal::httpClient();
-    $settings = \Drupal::config('carto_sync.settings');
-    $carto_id = $settings->get('carto_id');
-    $carto_api_key = $settings->get('carto_api_key');
-
-    $service = \Drupal::service('carto_sync.api');
-    $a = $service->getDatasetRows('untitled_table_5');
-
-
-    $uri = 'https://'. $carto_id .'.carto.com/api/v2/sql?q=SELECT count(*) FROM '. 'untitled_table_5';
-  // $data = $client->get($uri);
-   //$d = json_decode($data->getBody());
-    //$a =3;*/
-
-    /**
-     * @var $service CartoSyncApiInterface
-     */
-
-    if ($this->cartoSyncAvailable && isset($display['display_options']['dataset_name'])) {
-      if ($this->cartoSyncApi->datasetExists($display['display_options']['dataset_name'])) {
-        $url = $this->cartoSyncApi->getDatasetUrl($display['display_options']['dataset_name']);
+    $dataset = $display['display_options']['dataset_name'];
+    $status = $this->t('N/A');
+    if ($this->cartoSyncAvailable && isset($dataset)) {
+      if ($this->cartoSyncApi->datasetExists($dataset)) {
+        $url = $this->cartoSyncApi->getDatasetUrl($dataset);
         $link = Link::fromTextAndUrl($this->t('View in CARTO'), $url);
+        $rows = $this->cartoSyncApi->getDatasetRows($dataset);
+        $status = $this->t('@count rows in @dataset dataset', ['@count' => $rows, '@dataset' => $dataset]);
       }
       else {
         $link = Link::createFromRoute($this->t('Sync data'), 'carto_sync.import_form', ['view' => $view->id(), 'display_id' => $display['id']]);
@@ -175,7 +161,6 @@ class CartoSyncItemListController extends ControllerBase {
       ];
     }
 
-    //$status
 
     return [
       'data' => [
@@ -186,12 +171,12 @@ class CartoSyncItemListController extends ControllerBase {
         ],
         'dataset_name' => [
           'data' => [
-            '#plain_text' => isset($display['display_options']['dataset_name']) ? $display['display_options']['dataset_name'] : $this->t('Not defined'),
+            '#plain_text' => isset($dataset) ? $dataset : $this->t('Not defined'),
           ],
         ],
         'status' => [
           'data' => [
-            '#plain_text' => $view->get('description'),
+            '#plain_text' => $status,
           ],
         ],
         'operations' => [

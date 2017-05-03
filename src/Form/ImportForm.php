@@ -80,7 +80,7 @@ class ImportForm extends ConfirmFormBase {
     $service = \Drupal::service('carto_sync.api');
     $dataset = $this->view->getDisplay($this->displayId)['display_options']['dataset_name'];
     if ($service->datasetExists($dataset)) {
-      $form_state->setError($form['actions']['submit'], $this->t('Dataset @dataset already exists in your CARTO account.', ['@dataset' => $dataset));
+      $form_state->setError($form['actions']['submit'], $this->t('Dataset @dataset already exists in your CARTO account.', ['@dataset' => $dataset]));
     }
   }
 
