@@ -124,6 +124,15 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
   /**
    * {@inheritdoc}
    */
+  public function preview() {
+    return [
+      '#markup' => $this->t('Carto Sync display is not available on preview mode')
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function defaultableSections($section = NULL) {
     $sections = parent::defaultableSections($section);
 
