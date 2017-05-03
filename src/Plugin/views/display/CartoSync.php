@@ -116,8 +116,6 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
   public function render() {
     $build = $this->view->style_plugin->render($this->view->result);
 
-    $this->applyDisplayCachablityMetadata($build);
-
     return $build;
   }
 

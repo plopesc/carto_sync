@@ -73,12 +73,29 @@ class ImportForm extends ConfirmFormBase {
   /**
    * {@inheritdoc}
    */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    /**
+     * @var $service \Drupal\carto_sync\CartoSyncApiInterface
+     */
+    $service = \Drupal::service('carto_sync.api');
+    if ($service->datasetExists($this->view->getDisplay($this->displayId)['display_options']['dataset_name'])) {
+      $form_state->setError($form['actions']['submit'], $this->t('It is not possible to reimport an already existing dataset'));
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    // TODO: Implement submitForm() method.
-    $a = $this->view->getExecutable();
-      $b = $a->executeDisplay($this->displayId);
-      $c = drupal_render($b);
-    $a = 3;
+    $executable = $this->view->getExecutable();
+    $imported = $executable->executeDisplay($this->displayId);
+    if ($imported) {
+      drupal_set_message('Success');
+    }
+    else {
+      drupal_set_message('Fail', 'error');
+    }
+    $form_state->setRedirect('carto_sync.carto_sync_dashboard');
   }
 
 }

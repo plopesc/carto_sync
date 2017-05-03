@@ -179,15 +179,22 @@ class CartoSyncApi implements CartoSyncApiInterface {
    * {@inheritdoc}
    */
   public function import($path) {
-    $data = $this->httpClient->request('POST', $this->buildImportUrl(), [
-      'multipart' => [
-        [
-          'name' => 'file',
-          'contents' => file_get_contents($path),
-          'filename' => basename($path)
-        ]
-      ],
-    ]);
+    try {
+      $data = $this->httpClient->request('POST', $this->buildImportUrl(), [
+        'multipart' => [
+          [
+            'name' => 'file',
+            'contents' => file_get_contents($path),
+            'filename' => basename($path)
+          ]
+        ],
+      ]);
+    }
+    catch (RequestException $e) {
+      return FALSE;
+    }
+    $body = json_decode($data->getBody());
+    return !empty($body->success);
   }
 
 }
