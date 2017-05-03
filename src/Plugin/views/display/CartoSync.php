@@ -19,10 +19,10 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * @ViewsDisplay(
  *   id = "carto_sync",
  *   theme = "views_view",
- *   title = @Translation("CARTOSync"),
+ *   title = @Translation("CARTO Sync"),
  *   help = @Translation("Publish Drupal data to CARTO."),
  *   uses_route = FALSE,
- *   admin = @Translation("CARTOSync"),
+ *   admin = @Translation("CARTO Sync"),
  *   returns_response = FALSE
  * )
  */
