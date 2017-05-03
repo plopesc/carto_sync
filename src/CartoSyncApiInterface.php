@@ -23,7 +23,7 @@ interface CartoSyncApiInterface {
    * @param string $dataset
    *   The dataset name.
    *
-   * @return bool TRUE if the dataset name exists, otherwise FALSE.
+   * @return bool
    *   TRUE if the dataset name exists, otherwise FALSE.
    *
    * @throws CartoSyncException
@@ -43,8 +43,10 @@ interface CartoSyncApiInterface {
 
   /**
    * Generates the CARTO admin dataset URL.
+   *
    * @param string $dataset
    *   The dataset name.
+   *
    * @return \Drupal\Core\Url
    *   URL object to the given dataset.
    */
@@ -53,7 +55,7 @@ interface CartoSyncApiInterface {
   /**
    * Import the Drupal data in a CARTO dataset.
    *
-   * @param $path
+   * @param string $path
    *   The file to import path
    */
   public function import($path);

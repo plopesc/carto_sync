@@ -2,8 +2,6 @@
 
 namespace Drupal\carto_sync\Plugin\views\style;
 
-use Consolidation\OutputFormatters\Formatters\CsvFormatter;
-use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Plugin\views\style\StylePluginBase;
@@ -83,7 +81,7 @@ class CartoSync extends StylePluginBase {
 
     foreach ($columns as $field => $column) {
 
-      // Markup for the field name
+      // Markup for the field name.
       $form['info'][$field]['name'] = [
         '#markup' => $field_names[$field],
       ];
@@ -127,7 +125,7 @@ class CartoSync extends StylePluginBase {
           '#return_value' => $field,
           '#parents' => ['style_options', 'primary_key'],
           '#id' => $radio_id,
-          // because 'radio' doesn't fully support '#id' =(
+          // Because 'radio' doesn't fully support '#id' =(.
           '#attributes' => ['id' => $radio_id],
           '#default_value' => $default,
         ];
@@ -143,7 +141,7 @@ class CartoSync extends StylePluginBase {
           '#return_value' => $field,
           '#parents' => ['style_options', 'the_geom'],
           '#id' => $radio_id,
-          // because 'radio' doesn't fully support '#id' =(
+          // Because 'radio' doesn't fully support '#id' =(.
           '#attributes' => ['id' => $radio_id],
           '#default_value' => $the_geom,
         ];
@@ -170,17 +168,17 @@ class CartoSync extends StylePluginBase {
    * - Any fields not currently represented must be added.
    * - Columns must be re-ordered to match the fields.
    *
-   * @param $columns
+   * @param array $columns
    *   An array of all fields; the key is the id of the field and the
    *   value is the id of the column the field should be in.
-   * @param $fields
+   * @param array|null $fields
    *   The fields to use for the columns. If not provided, they will
    *   be requested from the current display. The running render should
    *   send the fields through, as they may be different than what the
    *   display has listed due to access control or other changes.
    *
    * @return array
-   *    An array of all the sanitized columns.
+   *   An array of all the sanitized columns.
    */
   public function sanitizeColumns($columns, $fields = NULL) {
     $sanitized = [];
@@ -201,7 +199,7 @@ class CartoSync extends StylePluginBase {
       }
 
       // If the field is the column, mark it so, or the column
-      // it's set to is a column, that's ok
+      // it's set to is a column, that's ok.
       if ($field == $column || $columns[$column] == $column && !empty($sanitized[$column])) {
         $sanitized[$field] = $column;
       }
@@ -234,7 +232,7 @@ class CartoSync extends StylePluginBase {
       }
     }
 
-    return  $columns;
+    return $columns;
   }
 
   /**
@@ -269,7 +267,7 @@ class CartoSync extends StylePluginBase {
     $output = $csv->__toString();
     $directory = 'temporary://carto_sync';
     file_prepare_directory($directory, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS);
-    $path = file_unmanaged_save_data($output,$directory . '/' . $this->displayHandler->options['dataset_name'] . '.csv', FILE_EXISTS_REPLACE);
+    $path = file_unmanaged_save_data($output, $directory . '/' . $this->displayHandler->options['dataset_name'] . '.csv', FILE_EXISTS_REPLACE);
 
     $real_path = \Drupal::service('file_system')->realpath($path);
     $service = \Drupal::service('carto_sync.api');

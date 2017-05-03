@@ -32,7 +32,7 @@ function template_preprocess_carto_sync_style_plugin_table(&$variables) {
     $row[]['data'] = $form['info'][$id]['name'];
     $row[]['data'] = $form['info'][$id]['field_name'];
 
-    if(!empty($form['primary_key'][$id])) {
+    if (!empty($form['primary_key'][$id])) {
       $row[] = [
         'data' => $form['primary_key'][$id],
         'align' => 'center',
@@ -42,7 +42,7 @@ function template_preprocess_carto_sync_style_plugin_table(&$variables) {
       $row[] = t('N/A');
     }
 
-    if(!empty($form['the_geom'][$id])) {
+    if (!empty($form['the_geom'][$id])) {
       $row[] = [
         'data' => $form['the_geom'][$id],
         'align' => 'center',
@@ -55,8 +55,8 @@ function template_preprocess_carto_sync_style_plugin_table(&$variables) {
     $rows[] = $row;
   }
 
-// Unset elements from the form array that are used to build the table so that
-// they are not rendered twice.
+  // Unset elements from the form array that are used to build the table so that
+  // they are not rendered twice.
   unset($form['primary_key']);
   unset($form['the_geom']);
   unset($form['info']);

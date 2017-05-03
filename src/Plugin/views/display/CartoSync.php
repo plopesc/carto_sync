@@ -322,6 +322,7 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
    * Checks whether the current display has any Geo field or not.
    *
    * @return bool
+   *   TRUE if the current display has at least one GeoField item.
    */
   protected function hasGeoField() {
     $available = FALSE;

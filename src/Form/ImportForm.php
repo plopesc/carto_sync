@@ -57,9 +57,6 @@ class ImportForm extends ConfirmFormBase {
 
   /**
    * {@inheritdoc}
-   *
-   * @param int $id
-   *   (optional) The ID of the item to be deleted.
    */
   public function buildForm(array $form, FormStateInterface $form_state, ViewEntityInterface $view = NULL, $display_id = NULL) {
     if (!$view->getDisplay($display_id)) {
@@ -74,9 +71,7 @@ class ImportForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    /**
-     * @var $service \Drupal\carto_sync\CartoSyncApiInterface
-     */
+    /** @var \Drupal\carto_sync\CartoSyncApiInterface $service */
     $service = \Drupal::service('carto_sync.api');
     $dataset = $this->view->getDisplay($this->displayId)['display_options']['dataset_name'];
     if ($service->datasetExists($dataset)) {

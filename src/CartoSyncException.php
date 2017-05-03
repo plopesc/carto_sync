@@ -2,4 +2,4 @@
 
 namespace Drupal\carto_sync;
 
-class CartoSyncException extends \Exception { }
+class CartoSyncException extends \Exception {}

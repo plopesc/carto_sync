@@ -58,22 +58,17 @@ class CartoSyncItemListController extends ControllerBase {
   }
 
   /**
-   * Listing.
+   * CARTO Sync Dashboard page controller callback.
    *
-   * @return string
-   *   Return Hello string.
+   * @return array
+   *   The page render array.
    */
-  public function listing() {
-
-    return $this->render();
-  }
-
-  protected function render() {
-    $views = $this->load();
+  protected function listing() {
+    $views = $this->loadCartoViewDisplays();
 
     $list['#type'] = 'container';
     foreach ($views as $view_id => $data) {
-      /** @var $view ViewEntityInterface*/
+      /** @var $view ViewEntityInterface */
       $view = $data['view'];
 
       if ($view->access('update')) {
@@ -105,7 +100,13 @@ class CartoSyncItemListController extends ControllerBase {
     return $list;
   }
 
-  protected function load() {
+  /**
+   * Loads the views using CARTO displays.
+   *
+   * @return array
+   *   List of CARTO Sync View displays keyed by view name.
+   */
+  protected function loadCartoViewDisplays() {
     $entity_ids = $this->getEntityIds();
     $entities = $this->entityTypeManager->getStorage('view')->loadMultipleOverrideFree($entity_ids);
 
@@ -160,7 +161,6 @@ class CartoSyncItemListController extends ControllerBase {
         '#markup' => $this->t('Not available to connect to CARTO')
       ];
     }
-
 
     return [
       'data' => [

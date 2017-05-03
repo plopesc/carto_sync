@@ -1,14 +1,11 @@
 <?php
 
 namespace Drupal\carto_sync;
-use Drupal\Core\Installer\Exception\AlreadyInstalledException;
 use Drupal\Core\Url;
-use Drupal\ctools\ContextNotFoundException;
 use GuzzleHttp\Client;
 use Drupal\Core\Config\ConfigFactory;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
-use MyProject\Proxies\__CG__\stdClass;
 
 /**
  * Class CartoSyncApi.
@@ -23,6 +20,7 @@ class CartoSyncApi implements CartoSyncApiInterface {
    * @var \GuzzleHttp\Client
    */
   protected $httpClient;
+
   /**
    * Drupal\Core\Config\ConfigFactory definition.
    *
@@ -108,6 +106,7 @@ class CartoSyncApi implements CartoSyncApiInterface {
    * Tries a fake request to CARTO to validate user credentials.
    *
    * @return bool
+   *   TRUE if the credentials are valid, otherwise FALSE.
    */
   protected function validCredentials() {
     try {
@@ -122,8 +121,11 @@ class CartoSyncApi implements CartoSyncApiInterface {
   /**
    * Builds a CARTO SQL API URL given a SQL query.
    *
-   * @param $query
+   * @param string $query
+   *   The SQL query to perform.
+   *
    * @return string
+   *   The CARTO API URL for the given query.
    */
   protected function buildSqlUrl($query) {
     $options = [
@@ -140,6 +142,7 @@ class CartoSyncApi implements CartoSyncApiInterface {
    * Builds a CARTO SQL API URL given a SQL query.
    *
    * @return string
+   *   The CARTO API import URL.
    */
   protected function buildImportUrl() {
     $options = [
@@ -154,8 +157,11 @@ class CartoSyncApi implements CartoSyncApiInterface {
   /**
    * Performs a GET query against the CARTO SQL API.
    *
-   * @param $query
+   * @param string $query
+   *   The SQL query to perform.
+   *
    * @return \stdClass
+   *   The object returned by CARTO.
    *
    * @throws CartoSyncException
    */

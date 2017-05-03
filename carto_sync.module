@@ -18,7 +18,7 @@ function carto_sync_theme() {
       ],
       'file' => 'carto_sync.theme.inc',
     ],
-    // On behalf of a plugin
+    // On behalf of a plugin.
     'carto_sync_style_plugin_table' => [
       'render element' => 'form',
       'file' => 'carto_sync.theme.inc',
