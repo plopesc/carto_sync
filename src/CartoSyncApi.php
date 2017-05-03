@@ -111,7 +111,7 @@ class CartoSyncApi implements CartoSyncApiInterface {
    */
   protected function validCredentials() {
     try {
-      $this->datasetExists(substr(md5(rand()), 0, 12));
+      $this->datasetExists(substr(str_shuffle("abcdefghijklmnopqrstuvwxyz"), 0, 12));
       return TRUE;
     }
     catch (CartoSyncException $e) {

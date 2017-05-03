@@ -267,7 +267,9 @@ class CartoSync extends StylePluginBase {
       $csv->insertOne($row);
     }
     $output = $csv->__toString();
-    $path = file_unmanaged_save_data($output,'temporary://carto_sync_' . $this->view->id() . '.csv', FILE_EXISTS_REPLACE);
+    $directory = 'temporary://carto_sync';
+    file_prepare_directory($directory, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS);
+    $path = file_unmanaged_save_data($output,$directory . '/' . $this->displayHandler->options['dataset_name'] . '.csv', FILE_EXISTS_REPLACE);
 
     $real_path = \Drupal::service('file_system')->realpath($path);
     $service = \Drupal::service('carto_sync.api');
