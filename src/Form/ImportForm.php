@@ -86,10 +86,10 @@ class ImportForm extends ConfirmFormBase {
     $executable = $this->view->getExecutable();
     $imported = $executable->executeDisplay($this->displayId);
     if ($imported) {
-      drupal_set_message('Success');
+      drupal_set_message($this->t('Data synchronized with CARTO successfully.'));
     }
     else {
-      drupal_set_message('Fail', 'error');
+      drupal_set_message($this->t('There was an error processing your request.'), 'error');
     }
     $form_state->setRedirect('carto_sync.carto_sync_dashboard');
   }

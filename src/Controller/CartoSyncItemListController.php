@@ -63,7 +63,7 @@ class CartoSyncItemListController extends ControllerBase {
    * @return array
    *   The page render array.
    */
-  protected function listing() {
+  public function listing() {
     $views = $this->loadCartoViewDisplays();
 
     $list['#type'] = 'container';
@@ -148,6 +148,7 @@ class CartoSyncItemListController extends ControllerBase {
     if ($this->cartoSyncAvailable && isset($dataset)) {
       if ($this->cartoSyncApi->datasetExists($dataset)) {
         $url = $this->cartoSyncApi->getDatasetUrl($dataset);
+        $url->setOption('attributes', ['target' => '_blank']);
         $link = Link::fromTextAndUrl($this->t('View in CARTO'), $url);
         $rows = $this->cartoSyncApi->getDatasetRows($dataset);
         $status = $this->t('@count rows in @dataset dataset', ['@count' => $rows, '@dataset' => $dataset]);

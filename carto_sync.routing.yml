@@ -1,11 +1,3 @@
-carto_sync.carto_sync_collection:
-  path: 'admin/structure/carto_sync/collection'
-  defaults:
-    _controller: '\Drupal\carto_sync\Controller\CartoSyncViewListController::listing'
-    _title: 'Carto Sync Views'
-  requirements:
-    _permission: 'administer carto_sync'
-
 carto_sync.admin_settings:
   path: '/admin/structure/carto_sync/settings'
   defaults:

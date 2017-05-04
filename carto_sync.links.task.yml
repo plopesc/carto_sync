@@ -3,12 +3,6 @@ cart_sync.dashboard:
   title: 'Dashboard'
   base_route: carto_sync.carto_sync_dashboard
 
-cart_sync.collection:
-  route_name: carto_sync.carto_sync_collection
-  title: 'List'
-  base_route: carto_sync.carto_sync_dashboard
-  weight: 10
-
 cart_sync.admin_settings:
   route_name: carto_sync.admin_settings
   title: 'Settings'
