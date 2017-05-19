@@ -399,7 +399,7 @@ class CartoSync extends StylePluginBase {
       return $headers;
     }
     else {
-      return array();
+      return [];
     }
   }
 

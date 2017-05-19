@@ -1,6 +1,7 @@
 <?php
 
 namespace Drupal\carto_sync;
+
 use Drupal\Core\Url;
 use GuzzleHttp\Client;
 use Drupal\Core\Config\ConfigFactory;
@@ -76,6 +77,7 @@ class CartoSyncApi implements CartoSyncApiInterface {
     try {
       $this->getDatasetRows($dataset);
     }
+
     catch(CartoSyncException $exception) {
       if (preg_match('/^relation \"(.*)" does not exist$/', $exception->getMessage())) {
         return FALSE;
@@ -191,7 +193,7 @@ class CartoSyncApi implements CartoSyncApiInterface {
           [
             'name' => 'file',
             'contents' => file_get_contents($path),
-            'filename' => basename($path)
+            'filename' => basename($path),
           ]
         ],
       ]);

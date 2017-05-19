@@ -12,7 +12,6 @@ use Drupal\Core\Form\FormStateInterface;
  */
 class SettingsForm extends ConfigFormBase {
 
-
   /**
    * {@inheritdoc}
    */
@@ -55,8 +54,8 @@ class SettingsForm extends ConfigFormBase {
     ];
 
     $form['submit'] = [
-        '#type' => 'submit',
-        '#value' => $this->t('Submit'),
+      '#type' => 'submit',
+      '#value' => $this->t('Submit'),
     ];
 
     return $form;

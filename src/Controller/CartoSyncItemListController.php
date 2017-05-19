@@ -27,7 +27,7 @@ class CartoSyncItemListController extends ControllerBase {
   /**
    * The CARTO Sync API service.
    *
-   * @var \Drupal\carto_sync\CartoSyncApiInterface.
+   * @var \Drupal\carto_sync\CartoSyncApiInterface
    */
   protected $cartoSyncApi;
 
@@ -68,7 +68,7 @@ class CartoSyncItemListController extends ControllerBase {
 
     $list['#type'] = 'container';
     foreach ($views as $view_id => $data) {
-      /** @var $view ViewEntityInterface */
+      // @var $view ViewEntityInterface
       $view = $data['view'];
 
       if ($view->access('update')) {
@@ -159,7 +159,7 @@ class CartoSyncItemListController extends ControllerBase {
     }
     else {
       $link = [
-        '#markup' => $this->t('Not available to connect to CARTO')
+        '#markup' => $this->t('Not available to connect to CARTO'),
       ];
     }
 
@@ -181,7 +181,7 @@ class CartoSyncItemListController extends ControllerBase {
           ],
         ],
         'operations' => [
-          'data' => $link
+          'data' => $link,
         ],
       ],
     ];

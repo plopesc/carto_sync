@@ -100,7 +100,6 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
     return $response;
   }
 
-
   /**
    * {@inheritdoc}
    */
@@ -124,7 +123,7 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
    */
   public function preview() {
     return [
-      '#markup' => $this->t('Carto Sync display is not available on preview mode')
+      '#markup' => $this->t('Carto Sync display is not available on preview mode'),
     ];
   }
 
@@ -158,19 +157,19 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
 
     // Overrides for standard stuff.
     $options['style']['contains']['type']['default'] = 'carto_sync';
-    $options['style']['contains']['options']['default']  = ['description' => ''];
+    $options['style']['contains']['options']['default'] = ['description' => ''];
     $options['defaults']['default']['style'] = FALSE;
     $options['defaults']['default']['access'] = FALSE;
 
     $options['access']['contains'] = [
       'type' => [
-        'default' => 'perm'
+        'default' => 'perm',
       ],
       'options' => [
         'default' => [
-          'perm' => 'administer carto_sync'
-        ]
-      ]
+          'perm' => 'administer carto_sync',
+        ],
+      ],
     ];
 
     return $options;

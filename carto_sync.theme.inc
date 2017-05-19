@@ -5,8 +5,8 @@
  * Preprocessors and theme functions for the CARTO Sync.
  */
 
-use \Drupal\Core\Render\Element;
-use \Drupal\Core\Template\Attribute;
+use Drupal\Core\Render\Element;
+use Drupal\Core\Template\Attribute;
 
 /**
  * Prepares variables for style plugin table templates.
@@ -24,7 +24,7 @@ function template_preprocess_carto_sync_style_plugin_table(&$variables) {
     t('Field'),
     t('CARTO Column'),
     t('Primary Key'),
-    t('The Geom')
+    t('The Geom'),
   ];
   $rows = [];
   foreach (Element::children($form['info']) as $id) {

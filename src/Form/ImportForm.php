@@ -31,7 +31,7 @@ class ImportForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return t('Do you want to create the dataset %id?', array('%id' => $this->id));
+    return t('Do you want to create the dataset %id?', ['%id' => $this->id]);
   }
 
   /**
