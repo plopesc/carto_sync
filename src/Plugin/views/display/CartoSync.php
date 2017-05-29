@@ -70,6 +70,14 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
       $errors[] = $this->t('Display "@display" requires at least one field of type "Geofield".', ['@display' => $this->display['display_title']]);
     }
 
+    if (!$this->getOption('dataset_name')) {
+      $errors[] = $this->t('Display "@display" requires a dataset name.', ['@display' => $this->display['display_title']]);
+    }
+
+    if (empty($this->plugins['style']['carto_sync']->options['primary_key'])) {
+      $errors[] = $this->t('Display "@display" requires a primary key.', ['@display' => $this->display['display_title']]);
+    }
+
     return $errors;
   }
 
@@ -237,7 +245,7 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
         $form['dataset_name'] = [
           '#title' => $this->t('Dataset name'),
           '#type' => 'machine_name',
-          '#description' => $this->t('This will be tthe name of the daaset generated when synchronizing your data with CARTO.'),
+          '#description' => $this->t('This will be the name of the daaset generated when synchronizing your data with CARTO.'),
           '#default_value' => $this->getOption('dataset_name'),
           '#required' => TRUE,
           '#maxlength' => 255,
