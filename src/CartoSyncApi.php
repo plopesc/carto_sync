@@ -186,7 +186,7 @@ class CartoSyncApi implements CartoSyncApiInterface {
   /**
    * {@inheritdoc}
    */
-  public function import($path) {
+  public function importDataset($path) {
     try {
       $data = $this->httpClient->request('POST', $this->buildImportUrl(), [
         'multipart' => [
@@ -203,6 +203,22 @@ class CartoSyncApi implements CartoSyncApiInterface {
     }
     $body = json_decode($data->getBody());
     return !empty($body->success);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function deleteDataset($dataset) {
+
+    try {
+      $query = 'DELETE FROM ' . $dataset;
+      $this->executeGetQuery($query);
+      $query = 'DROP TABLE ' . $dataset;
+      $this->executeGetQuery($query);
+    } catch (CartoSyncException $e) {
+      return FALSE;
+    }
+    return TRUE;
   }
 
 }

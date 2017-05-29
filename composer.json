@@ -2,7 +2,7 @@
   "name": "drupal/carto_sync",
   "description": "Publish Drupal data in CARTO",
   "type": "drupal-module",
-  "homepage": "https://www.drupal.org/sandbox/plopesc/carto_sync",
+  "homepage": "https://www.drupal.org/project/carto_sync",
   "keywords": ["Drupal", "CARTO"],
   "authors": [
     {

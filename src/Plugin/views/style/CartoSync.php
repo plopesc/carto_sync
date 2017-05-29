@@ -271,7 +271,7 @@ class CartoSync extends StylePluginBase {
 
     $real_path = \Drupal::service('file_system')->realpath($path);
     $service = \Drupal::service('carto_sync.api');
-    return $service->import($real_path);
+    return $service->importDataset($real_path);
   }
 
   /**

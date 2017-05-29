@@ -6,6 +6,7 @@ use Drupal\carto_sync\CartoSyncApiInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\views\ViewEntityInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityTypeManager;
@@ -149,12 +150,32 @@ class CartoSyncItemListController extends ControllerBase {
       if ($this->cartoSyncApi->datasetExists($dataset)) {
         $url = $this->cartoSyncApi->getDatasetUrl($dataset);
         $url->setOption('attributes', ['target' => '_blank']);
-        $link = Link::fromTextAndUrl($this->t('View in CARTO'), $url);
+        $link = [
+          '#type' => 'dropbutton',
+          '#links' => [
+            'view' => [
+              'title' => $this->t('View in CARTO'),
+              'url' => $url,
+            ],
+            'delete' => [
+              'title' => $this->t('Delete dataset'),
+              'url' => Url::fromRoute('carto_sync.delete_form', ['view' => $view->id(), 'display_id' => $display['id']])
+            ]
+          ]
+        ];
         $rows = $this->cartoSyncApi->getDatasetRows($dataset);
         $status = $this->t('@count rows in @dataset dataset', ['@count' => $rows, '@dataset' => $dataset]);
       }
       else {
-        $link = Link::createFromRoute($this->t('Sync data'), 'carto_sync.import_form', ['view' => $view->id(), 'display_id' => $display['id']]);
+        $link = [
+          '#type' => 'dropbutton',
+          '#links' => [
+            'sync' => [
+            'title' => $this->t('Sync data'),
+            'url' => Url::fromRoute('carto_sync.import_form', ['view' => $view->id(), 'display_id' => $display['id']]),
+            ]
+          ]
+        ];
       }
     }
     else {

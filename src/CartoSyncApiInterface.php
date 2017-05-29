@@ -58,6 +58,17 @@ interface CartoSyncApiInterface {
    * @param string $path
    *   The file to import path
    */
-  public function import($path);
+  public function importDataset($path);
+
+  /**
+   * Reomves a CARTO dataset given its name.
+   *
+   * @param string $dataset
+   *   The dataset name.
+   *
+   * @return bool
+   *   Bool indicating whether the it as successfully removed or not.
+   */
+  public function deleteDataset($dataset);
 
 }

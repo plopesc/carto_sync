@@ -91,7 +91,9 @@ function template_preprocess_carto_sync_listing_table(&$variables) {
 
   if (!empty($variables['rows'])) {
     foreach ($variables['rows'] as $key => $row) {
-      $variables['rows'][$key]['attributes'] = new Attribute($row['#attributes']);
+      if (isset($row['#attributes'])) {
+        $variables['rows'][$key]['attributes'] = new Attribute($row['#attributes']);
+      }
     }
   }
 }

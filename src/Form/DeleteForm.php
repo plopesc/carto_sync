@@ -4,42 +4,42 @@ namespace Drupal\carto_sync\Form;
 
 use Drupal\Core\Form\FormStateInterface;
 
-class ImportForm extends CartoSyncConfirmFormBase {
+class DeleteForm extends CartoSyncConfirmFormBase {
 
   /**
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'carto_sync_import';
+    return 'carto_sync_delete';
   }
 
   /**
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return t('Do you want to create the dataset %dataset?', ['%daaset' => $this->dataset]);
+    return t('Do you want to delete the dataset %id?', ['%id' => $this->displayId]);
   }
 
   /**
    * {@inheritdoc}
    */
   public function getDescription() {
-    return t('Views data will be imported into a CARTO dataset');
+    return t('You will delete the dataset from your CARTO account. This action cannot be undone');
   }
 
   /**
    * {@inheritdoc}
    */
   public function getConfirmText() {
-    return t('Import');
+    return t('Delete');
   }
 
   /**
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    if ($this->cartoSyncApi->datasetExists($this->dataset)) {
-      $form_state->setError($form['actions']['submit'], $this->t('Dataset @dataset already exists in your CARTO account.', ['@dataset' => $this->dataset]));
+    if (!$this->cartoSyncApi->datasetExists($this->dataset)) {
+      $form_state->setError($form['actions']['submit'], $this->t('Dataset @dataset does not exist in your CARTO account.', ['@dataset' => $this->dataset]));
     }
   }
 
@@ -47,10 +47,9 @@ class ImportForm extends CartoSyncConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $executable = $this->view->getExecutable();
-    $imported = $executable->executeDisplay($this->displayId);
-    if ($imported) {
-      drupal_set_message($this->t('Data synchronized with CARTO successfully.'));
+    $deleted = $this->cartoSyncApi->deleteDataset($this->dataset);
+    if ($deleted) {
+      drupal_set_message($this->t('Dataset @dataset deleted successfully.', ['@dataset' => $this->dataset]));
     }
     else {
       drupal_set_message($this->t('There was an error processing your request.'), 'error');

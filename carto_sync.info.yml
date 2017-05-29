@@ -2,6 +2,6 @@ name: CARTO Sync
 type: module
 description: Publish Drupal data in CARTO
 core: 8.x
-package: Custom
+package: Carto
 dependencies:
   - views
