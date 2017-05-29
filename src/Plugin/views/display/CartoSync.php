@@ -84,33 +84,6 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
   /**
    * {@inheritdoc}
    */
-  public static function buildResponse($view_id, $display_id, array $args = []) {
-    $build = static::buildBasicRenderable($view_id, $display_id, $args);
-
-    // Set up an empty response, so for example RSS can set the proper
-    // Content-Type header.
-    $response = new CacheableResponse('', 200);
-    $build['#response'] = $response;
-
-    /** @var \Drupal\Core\Render\RendererInterface $renderer */
-    $renderer = \Drupal::service('renderer');
-
-    $output = (string) $renderer->renderRoot($build);
-
-    if (empty($output)) {
-      throw new NotFoundHttpException();
-    }
-
-    $response->setContent($output);
-    $cache_metadata = CacheableMetadata::createFromRenderArray($build);
-    $response->addCacheableDependency($cache_metadata);
-
-    return $response;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function execute() {
     parent::execute();
 
@@ -290,32 +263,6 @@ class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterf
         $this->setOption('dataset_name', $form_state->getValue('dataset_name'));
         break;
     }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function attachTo(ViewExecutable $clone, $display_id, array &$build) {
-    $displays = $this->getOption('displays');
-    if (empty($displays[$display_id])) {
-      return;
-    }
-
-    // Defer to the feed style; it may put in meta information, and/or
-    // attach a feed icon.
-    $clone->setArguments($this->view->args);
-    $clone->setDisplay($this->display['id']);
-    $clone->buildTitle();
-    if ($plugin = $clone->display_handler->getPlugin('style')) {
-      $plugin->attachTo($build, $display_id, $clone->getUrl(), $clone->getTitle());
-      foreach ($clone->feedIcons as $feed_icon) {
-        $this->view->feedIcons[] = $feed_icon;
-      }
-    }
-
-    // Clean up.
-    $clone->destroy();
-    unset($clone);
   }
 
   /**
