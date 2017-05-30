@@ -26,7 +26,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *   returns_response = FALSE
  * )
  */
-class CartoSync extends DisplayPluginBase implements ResponseDisplayPluginInterface {
+class CartoSync extends DisplayPluginBase {
 
   /**
    * Overrides \Drupal\views\Plugin\views\display\DisplayPluginBase::$usesAJAX.
