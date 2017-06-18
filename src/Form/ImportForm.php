@@ -53,7 +53,7 @@ class ImportForm extends CartoSyncConfirmFormBase {
       drupal_set_message($this->t('Data synchronized with CARTO successfully.'));
     }
     else {
-      drupal_set_message($this->t('There was an error processing your request.'), 'error');
+      drupal_set_message($this->t('There was an error processing your request. More information may be available in the system logs.'), 'error');
     }
     $form_state->setRedirect('carto_sync.carto_sync_dashboard');
   }

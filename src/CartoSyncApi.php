@@ -194,11 +194,12 @@ class CartoSyncApi implements CartoSyncApiInterface {
             'name' => 'file',
             'contents' => file_get_contents($path),
             'filename' => basename($path),
-          ]
+          ],
         ],
       ]);
     }
     catch (RequestException $e) {
+      watchdog_exception('carto_sync', $e);
       return FALSE;
     }
     $body = json_decode($data->getBody());
