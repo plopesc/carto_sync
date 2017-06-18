@@ -17,7 +17,7 @@ class ImportForm extends CartoSyncConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return t('Do you want to create the dataset %dataset?', ['%daaset' => $this->dataset]);
+    return t('Do you want to create the dataset %dataset?', ['%dataset' => $this->dataset]);
   }
 
   /**
